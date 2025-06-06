@@ -19,10 +19,24 @@ public record StatusResponse(
         @JsonProperty("plans_allowed_uid") String plansAllowedUid,
         @JsonProperty("task_results_uid") String taskResultsUid,
         @JsonProperty("lock_info_uid") String lockInfoUid,
+        @JsonProperty("queue_stop_pending") boolean queueStopPending,
+        @JsonProperty("queue_autostart_enabled") boolean queueAutostartEnabled,
+        @JsonProperty("worker_background_tasks") int workerBackgroundTasks,
+        @JsonProperty("ip_kernel_state") String ipKernelState,
+        @JsonProperty("ip_kernel_captured") Boolean ipKernelCaptured,
+        @JsonProperty("pause_pending") boolean pausePending,
+        @JsonProperty("run_list_uid") String runListUid,
+        @JsonProperty("plan_queue_mode") PlanQueueMode planQueueMode,
         @JsonProperty("lock") LockInfo lock
 ) {
     public record LockInfo(
             @JsonProperty("environment") boolean environment,
             @JsonProperty("queue") boolean queue
     ) {}
+
+    public record PlanQueueMode(
+            @JsonProperty("loop") boolean loop,
+            @JsonProperty("ignore_failures") boolean ignoreFailures
+    ) {}
 }
+
