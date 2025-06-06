@@ -1,0 +1,28 @@
+package com.jbi.api;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record StatusResponse(
+        @JsonProperty("msg") String msg,
+        @JsonProperty("manager_state") String managerState,
+        @JsonProperty("worker_environment_exists") boolean workerEnvironmentExists,
+        @JsonProperty("worker_environment_state") String workerEnvironmentState,
+        @JsonProperty("re_state") String reState,
+        @JsonProperty("items_in_queue") int itemsInQueue,
+        @JsonProperty("items_in_history") int itemsInHistory,
+        @JsonProperty("running_item_uid") String runningItemUid,
+        @JsonProperty("plan_queue_uid") String planQueueUid,
+        @JsonProperty("plan_history_uid") String planHistoryUid,
+        @JsonProperty("devices_existing_uid") String devicesExistingUid,
+        @JsonProperty("plans_existing_uid") String plansExistingUid,
+        @JsonProperty("devices_allowed_uid") String devicesAllowedUid,
+        @JsonProperty("plans_allowed_uid") String plansAllowedUid,
+        @JsonProperty("task_results_uid") String taskResultsUid,
+        @JsonProperty("lock_info_uid") String lockInfoUid,
+        @JsonProperty("lock") LockInfo lock
+) {
+    public record LockInfo(
+            @JsonProperty("environment") boolean environment,
+            @JsonProperty("queue") boolean queue
+    ) {}
+}
