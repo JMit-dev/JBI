@@ -17,7 +17,7 @@ This prototype provides a minimal Java REST client for interacting with the [Blu
    export BLUESKY_API_KEY=a
 
    # run the queue server
-   uvicorn bluesky_httpserver.server:app --host localhost --port 60610
+   start-re-manager --use-ipython-kernel=ON --zmq-publish-console=ON
 
    # run the http server
    QSERVER_HTTP_SERVER_SINGLE_USER_API_KEY=a uvicorn --host localhost --port 60610 bluesky_httpserver.server:app 
