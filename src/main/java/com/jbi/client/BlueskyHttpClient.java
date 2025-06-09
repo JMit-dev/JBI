@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jbi.api.*;
 import com.jbi.api.EverythingElse.Arbitrary;
+import com.jbi.util.RateLimiter;
 
 import java.net.URI;
 import java.net.http.*;
@@ -13,10 +14,17 @@ import java.util.Map;
 public final class BlueskyHttpClient {
 
     private static volatile BlueskyHttpClient INSTANCE;
+    /** Initialise with default 10 req/sec. */
     public static void initialize(String baseUrl, String apiKey) {
+        initialize(baseUrl, apiKey, 10.0);
+    }
+
+    /** Initialise with custom rate. */
+    public static void initialize(String baseUrl, String apiKey, double permitsPerSecond) {
         if (INSTANCE == null) {
             synchronized (BlueskyHttpClient.class) {
-                if (INSTANCE == null) INSTANCE = new BlueskyHttpClient(baseUrl, apiKey);
+                if (INSTANCE == null)
+                    INSTANCE = new BlueskyHttpClient(baseUrl, apiKey, permitsPerSecond);
             }
         }
     }
@@ -29,27 +37,23 @@ public final class BlueskyHttpClient {
     private final ObjectMapper mapper = new ObjectMapper();
     private final String base;
     private final String apiKey;
+    private final RateLimiter limiter;
 
-    private BlueskyHttpClient(String baseUrl, String apiKey) {
+    private BlueskyHttpClient(String baseUrl, String apiKey, double permitsPerSecond) {
         this.http = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
-        this.base   = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
-        this.apiKey = apiKey;
+        this.base    = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+        this.apiKey  = apiKey;
+        this.limiter = new RateLimiter(permitsPerSecond);
     }
 
 
     public Envelope<?> call(ApiEndpoint ep, Object body) throws Exception {
         Object requestBody = (body == NoBody.INSTANCE) ? null : body;
 
-        return switch (ep) {
-            case STATUS    -> send(ep, requestBody,
-                    new TypeReference<Envelope<StatusResponse>>() {});
-            case QUEUE_GET -> send(ep, requestBody,
-                    new TypeReference<Envelope<QueueGetPayload>>() {});
-            default        -> send(ep, requestBody,
-                    new TypeReference<Envelope<Arbitrary>>() {});
-        };
+        return send(ep, requestBody,
+                new TypeReference<Envelope<Arbitrary>>() {});
     }
 
 
@@ -59,6 +63,7 @@ public final class BlueskyHttpClient {
     }
 
     public <T> T send(ApiEndpoint api, Object body, Class<T> type) throws Exception {
+        limiter.acquire();
         HttpRequest req = build(api.endpoint(), body);
         HttpResponse<String> rsp = http.send(req, HttpResponse.BodyHandlers.ofString());
         check(rsp, api);
@@ -66,6 +71,7 @@ public final class BlueskyHttpClient {
     }
 
     public <T> T send(ApiEndpoint api, Object body, TypeReference<T> ref) throws Exception {
+        limiter.acquire();
         HttpRequest req = build(api.endpoint(), body);
         HttpResponse<String> rsp = http.send(req, HttpResponse.BodyHandlers.ofString());
         check(rsp, api);
