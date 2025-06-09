@@ -2,7 +2,8 @@ package com.jbi.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jbi.api.BasicResponse;
+import com.jbi.api.*;
+import com.jbi.api.EverythingElse.Arbitrary;
 
 import java.net.URI;
 import java.net.http.*;
@@ -11,7 +12,6 @@ import java.util.Map;
 
 public final class BlueskyHttpClient {
 
-    /* ---------- singleton bootstrapping ---------- */
     private static volatile BlueskyHttpClient INSTANCE;
     public static void initialize(String baseUrl, String apiKey) {
         if (INSTANCE == null) {
@@ -25,53 +25,52 @@ public final class BlueskyHttpClient {
         return INSTANCE;
     }
 
-    /* ---------- instance ---------- */
     private final HttpClient http;
     private final ObjectMapper mapper = new ObjectMapper();
     private final String base;
     private final String apiKey;
 
     private BlueskyHttpClient(String baseUrl, String apiKey) {
-        this.http   = HttpClient.newBuilder()
+        this.http = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
         this.base   = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         this.apiKey = apiKey;
     }
 
-    /* ---------- public façade ---------- */
 
-    // strongly-typed convenience:
-    public com.jbi.api.StatusResponse status() throws Exception {
-        return send(ApiEndpoint.STATUS, null, com.jbi.api.StatusResponse.class);
+    public Envelope<?> call(ApiEndpoint ep, Object body) throws Exception {
+        Object requestBody = (body == NoBody.INSTANCE) ? null : body;
+
+        return switch (ep) {
+            case STATUS    -> send(ep, requestBody,
+                    new TypeReference<Envelope<StatusResponse>>() {});
+            case QUEUE_GET -> send(ep, requestBody,
+                    new TypeReference<Envelope<QueueGetPayload>>() {});
+            default        -> send(ep, requestBody,
+                    new TypeReference<Envelope<Arbitrary>>() {});
+        };
     }
-    public void environmentOpen()  throws Exception { noContent(ApiEndpoint.ENVIRONMENT_OPEN); }
-    public void environmentClose() throws Exception { noContent(ApiEndpoint.ENVIRONMENT_CLOSE); }
 
-    // generic fallback (record-heavy callers can use it directly)
+
+    public Map<String,Object> send(ApiEndpoint api, Object body) throws Exception {
+        return send(api, body,
+                new TypeReference<Map<String,Object>>() {});
+    }
+
     public <T> T send(ApiEndpoint api, Object body, Class<T> type) throws Exception {
         HttpRequest req = build(api.endpoint(), body);
         HttpResponse<String> rsp = http.send(req, HttpResponse.BodyHandlers.ofString());
         check(rsp, api);
-        // shortcut: some endpoints have no JSON body (“OK” string). Handle here
-        if (type == Void.class) return null;
-        return mapper.readValue(rsp.body(), type);
+        return (type == Void.class) ? null : mapper.readValue(rsp.body(), type);
     }
 
-    /** For endpoints that only say `{"success": true}` or empty body */
-    private void noContent(ApiEndpoint api) throws Exception {
-        send(api, null, Void.class);
-    }
-
-    // Map / JsonNode variant if you need totally dynamic access
-    public Map<String,Object> send(ApiEndpoint api, Object body) throws Exception {
+    public <T> T send(ApiEndpoint api, Object body, TypeReference<T> ref) throws Exception {
         HttpRequest req = build(api.endpoint(), body);
         HttpResponse<String> rsp = http.send(req, HttpResponse.BodyHandlers.ofString());
         check(rsp, api);
-        return mapper.readValue(rsp.body(), new TypeReference<>() {});
+        return mapper.readValue(rsp.body(), ref);
     }
-
-    /* ---------- helpers ---------- */
 
     private HttpRequest build(Endpoint ep, Object body) throws Exception {
         HttpRequest.Builder b = HttpRequest.newBuilder()
@@ -82,23 +81,22 @@ public final class BlueskyHttpClient {
         return switch (ep.method()) {
             case GET    -> b.GET().build();
             case DELETE -> b.DELETE().build();
-            case POST, PUT -> {
-                HttpRequest.BodyPublisher pub =
-                        (body == null)
-                                ? HttpRequest.BodyPublishers.noBody()
-                                : HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(body));
-                yield b.method(ep.method().name(), pub).build();
-            }
+            case POST, PUT ->
+                    b.method(ep.method().name(),
+                                    (body == null)
+                                            ? HttpRequest.BodyPublishers.noBody()
+                                            : HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(body)))
+                            .build();
         };
     }
 
     private void check(HttpResponse<String> rsp, ApiEndpoint api) throws Exception {
         if (rsp.statusCode() >= 200 && rsp.statusCode() < 300) {
-            // if JSON envelope has {'success': false}, treat as failure too
+            // treat {"success":false} as failure
             try {
                 BasicResponse br = mapper.readValue(rsp.body(), BasicResponse.class);
                 if (!br.success()) throw new RequestFailedException(api, br.msg());
-            } catch (Exception ignore) { /* not every endpoint wraps */ }
+            } catch (Exception ignore) { /* not always enveloped */ }
         } else if (rsp.statusCode() < 500) {
             throw new ClientErrorException(api, rsp);
         } else {
@@ -106,10 +104,9 @@ public final class BlueskyHttpClient {
         }
     }
 
-    /* ---------- tiny domain exceptions ---------- */
     public sealed static class BlueskyException extends RuntimeException
             permits ClientErrorException, ServerErrorException, RequestFailedException {
-        BlueskyException(String msg) { super(msg); }
+        BlueskyException(String m) { super(m); }
     }
     public static final class ClientErrorException extends BlueskyException {
         ClientErrorException(ApiEndpoint api, HttpResponse<?> rsp) {
