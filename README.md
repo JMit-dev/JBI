@@ -13,9 +13,6 @@ This prototype provides a minimal Java REST client for interacting with the [Blu
 ## Setup
 
    ```sh
-   # set api key as environment variable
-   export BLUESKY_API_KEY=a
-
    # run the queue server
    start-re-manager --use-ipython-kernel=ON --zmq-publish-console=ON
 
@@ -24,4 +21,14 @@ This prototype provides a minimal Java REST client for interacting with the [Blu
 
    # test communication
    curl -H "Authorization: ApiKey a" http://localhost:60610/api/status
+   ```
+
+## Run
+
+   ```sh
+   # set api key as environment variable
+   export BLUESKY_API_KEY=a
+   
+   # run maven configuration
+   mvn clean javafx:run
    ```
