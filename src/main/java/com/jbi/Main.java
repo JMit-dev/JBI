@@ -13,13 +13,21 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // Load FXML from resources/view/Hello.fxml
-        Parent root = FXMLLoader.load(getClass().getResource("/view/Hello.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/monitor/QueueServer.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("JavaFX FXML Example");
         stage.show();
+        new Thread(this::startBlueskyHttpClient).start();
+    }
 
-        new Thread(() -> {
+
+    public static void main(String[] args) {
+        launch(args);
+
+    }
+
+    private void startBlueskyHttpClient() {
             String baseUrl = "http://localhost:60610";
             String apiKey = System.getenv("BLUESKY_API_KEY");
             if (apiKey == null) {
@@ -41,12 +49,5 @@ public class Main extends Application {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }).start();
-    }
-
-
-    public static void main(String[] args) {
-        launch(args);
-
     }
 }
