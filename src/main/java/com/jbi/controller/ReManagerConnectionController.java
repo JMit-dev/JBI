@@ -1,7 +1,9 @@
 package com.jbi.controller;
 
+import com.jbi.api.StatusResponse;
 import com.jbi.client.BlueskyService;
 import com.jbi.util.PollCenter;
+import com.jbi.util.StatusBus;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,18 +34,18 @@ public final class ReManagerConnectionController {
                 this::updateWidgets);       // FX thread
     }
 
-    private boolean queryStatusOnce() {
+    private StatusResponse queryStatusOnce() {
         try {
-            svc.status();                                       // ignore payload
-            return true;
+            return svc.status();
         } catch (Exception ex) {
-            return false;                                       // network/error
+            return null;
         }
     }
 
     private void stopPolling() {
         if (pollTask != null) pollTask.cancel(true);
         pollTask = null;
+        StatusBus.push(null);
         showIdle();
     }
 
@@ -63,8 +65,9 @@ public final class ReManagerConnectionController {
         disconnectButton.setDisable(false);
     }
 
-    private void updateWidgets(boolean online) {
-        if (online) showOnline();
+    private void updateWidgets(StatusResponse s) {
+        StatusBus.push((s));
+        if (s != null) showOnline();
         else        showPending();      // keep polling; user may Disconnect
     }
 }
