@@ -1,7 +1,6 @@
 package com.jbi;
 
 import com.jbi.client.BlueskyHttpClient;
-import com.jbi.api.StatusResponse;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,7 +20,7 @@ public class Main extends Application {
 
         BlueskyHttpClient.initialize(baseUrl, apiKey);  // singleton init
 
-        Parent root = FXMLLoader.load(getClass().getResource("/view/monitor/QueueServer.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/FxReManagerConnection.fxml"));
         stage.setScene(new Scene(root));
         stage.setTitle("Queue Monitor");
         stage.show();

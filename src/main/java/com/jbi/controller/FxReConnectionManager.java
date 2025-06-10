@@ -1,13 +1,12 @@
-package com.jbi.controller.monitor;
+package com.jbi.controller;
 
 
-import com.jbi.client.BlueskyHttpClient;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
-public class QueueServer {
+public class FxReConnectionManager {
 
     @FXML
     private Button connectButton;
