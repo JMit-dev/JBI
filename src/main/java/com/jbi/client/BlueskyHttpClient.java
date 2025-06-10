@@ -2,6 +2,7 @@ package com.jbi.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jbi.api.*;
 import com.jbi.api.EverythingElse.Arbitrary;
@@ -37,7 +38,8 @@ public final class BlueskyHttpClient {
     }
 
     private final HttpClient http;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final String base;
     private final String apiKey;
     private final RateLimiter limiter;
@@ -45,6 +47,7 @@ public final class BlueskyHttpClient {
 
     private BlueskyHttpClient(String baseUrl, String apiKey, double permitsPerSecond) {
         this.http = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
         this.base    = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
@@ -128,15 +131,23 @@ public final class BlueskyHttpClient {
     private void check(HttpResponse<String> rsp, ApiEndpoint api) throws Exception {
         if (rsp.statusCode() >= 200 && rsp.statusCode() < 300) {
             try {
-                BasicResponse br = mapper.readValue(rsp.body(), BasicResponse.class);
-                if (!br.success()) throw new RequestFailedException(api, br.msg());
-            } catch (Exception ignore) {}
+                Map<String,Object> map = mapper.readValue(
+                        rsp.body(), new TypeReference<>() {});
+                Object s = map.get("success");
+                if (Boolean.FALSE.equals(s)) {
+                    String msg = String.valueOf(map.getOrDefault("msg", "(no msg)"));
+                    throw new RequestFailedException(api, msg);
+                }
+            } catch (JsonProcessingException ignore) {
+                /* response isn't a generic object, that's fine (e.g. plain "OK") */
+            }
         } else if (rsp.statusCode() < 500) {
             throw new ClientErrorException(api, rsp);
         } else {
             throw new ServerErrorException(api, rsp);
         }
     }
+
 
     public sealed static class BlueskyException extends RuntimeException
             permits ClientErrorException, ServerErrorException, RequestFailedException {

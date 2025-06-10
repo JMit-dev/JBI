@@ -20,7 +20,7 @@ public class Main extends Application {
 
         BlueskyHttpClient.initialize(baseUrl, apiKey);  // singleton init
 
-        Parent root = FXMLLoader.load(getClass().getResource("/view/FxReManagerConnection.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/ReManagerConnection.fxml"));
         stage.setScene(new Scene(root));
         stage.setTitle("Queue Monitor");
         stage.show();

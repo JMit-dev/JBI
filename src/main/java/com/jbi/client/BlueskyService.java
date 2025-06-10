@@ -2,6 +2,7 @@ package com.jbi.client;
 
 import com.jbi.api.Envelope;
 import com.jbi.api.NoBody;
+import com.jbi.api.StatusResponse;
 
 /**
  * Exhaustive façade: one method per QueueServer REST endpoint.
@@ -22,7 +23,7 @@ public final class BlueskyService {
     /* ---- Ping & status --------------------------------------------------- */
 
     public Envelope<?>          ping()                       throws Exception { return http.call(ApiEndpoint.PING,            NoBody.INSTANCE); }
-    public Envelope<?>          status()                     throws Exception { return http.call(ApiEndpoint.STATUS,          NoBody.INSTANCE); }
+    public StatusResponse status() throws Exception { return http.send(ApiEndpoint.STATUS, NoBody.INSTANCE, StatusResponse.class); }
     public Envelope<?>          configGet()                  throws Exception { return http.call(ApiEndpoint.CONFIG_GET,      NoBody.INSTANCE); }
 
     /* ---- Queue control --------------------------------------------------- */
