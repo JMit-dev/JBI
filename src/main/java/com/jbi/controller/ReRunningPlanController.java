@@ -148,8 +148,7 @@ public final class ReRunningPlanController implements Initializable {
 
         try {
             svc.queueItemAdd(running);
-        } catch (Exception ex) {
-            System.err.println("Copy-to-queue failed: " + ex.getMessage());
+        } catch (Exception ignored) {
         }
     }
 
@@ -157,8 +156,7 @@ public final class ReRunningPlanController implements Initializable {
     @FXML
     private void updateEnvironment() {
         try { svc.environmentUpdate(Map.of()); }
-        catch (Exception ex) {
-            System.err.println("Environment-update failed: " + ex.getMessage());
+        catch (Exception ignored) {
         }
     }
 

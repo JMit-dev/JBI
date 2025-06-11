@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class BlueskyHttpClient {
 
@@ -45,7 +46,7 @@ public final class BlueskyHttpClient {
     private final String base;
     private final String apiKey;
     private final RateLimiter limiter;
-    private static final java.util.logging.Logger LOG = HttpSupport.LOG;
+    private static final Logger LOG = HttpSupport.LOG;
 
     private BlueskyHttpClient(String baseUrl, String apiKey, double permitsPerSecond) {
         this.http = HttpClient.newBuilder()
