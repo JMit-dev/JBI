@@ -1,8 +1,6 @@
 package com.jbi.client;
 
-import com.jbi.api.Envelope;
-import com.jbi.api.NoBody;
-import com.jbi.api.StatusResponse;
+import com.jbi.api.*;
 
 /**
  * Exhaustive façade: one method per QueueServer REST endpoint.
@@ -35,7 +33,24 @@ public final class BlueskyService {
     public Envelope<?>          queueClear()                 throws Exception { return http.call(ApiEndpoint.QUEUE_CLEAR,     NoBody.INSTANCE); }
     public Envelope<?>          queueAutostart(Object body)  throws Exception { return http.call(ApiEndpoint.QUEUE_AUTOSTART, body); } // {"enable":true}
     public Envelope<?>          queueModeSet(Object body)    throws Exception { return http.call(ApiEndpoint.QUEUE_MODE_SET,  body); } // {"mode":"loop"}
-    public Envelope<?>          queueItemAdd(Object body)    throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD,  body); }
+    public Envelope<?>          queueItemAdd(Object rawBody) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD, rawBody);
+    }
+
+    public Envelope<?> queueItemAdd(QueueItem item,
+                                    String   user,
+                                    String   group) throws Exception {
+
+        var req = new QueueItemAdd(
+                QueueItemAdd.Item.from(item),
+                user,
+                group);
+
+        return queueItemAdd(req);
+    }
+    public Envelope<?> queueItemAdd(QueueItem item) throws Exception {
+        return queueItemAdd(item, "GUI Client", "primary");
+    }
+
     public Envelope<?>          queueItemAddBatch(Object b ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD_BATCH, b); }
     public Envelope<?>          queueItemGet(Object params ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_GET,  params); }
     public Envelope<?>          queueItemUpdate(Object b   ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_UPDATE, b); }
@@ -107,4 +122,11 @@ public final class BlueskyService {
     public Envelope<?>          whoAmI()                      throws Exception { return http.call(ApiEndpoint.WHOAMI,        NoBody.INSTANCE); }
     public Envelope<?>          apiScopes()                   throws Exception { return http.call(ApiEndpoint.API_SCOPES,    NoBody.INSTANCE); }
     public Envelope<?>          logout()                      throws Exception { return http.call(ApiEndpoint.LOGOUT,       NoBody.INSTANCE); }
+
+    /* ---- Helpers --------------------------------------------------------- */
+
+    public QueueGetPayload queueGetTyped() throws Exception {
+        return http.send(ApiEndpoint.QUEUE_GET, NoBody.INSTANCE, QueueGetPayload.class);
+    }
+
 }

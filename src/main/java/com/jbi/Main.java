@@ -2,6 +2,7 @@ package com.jbi;
 
 import com.jbi.client.BlueskyHttpClient;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,6 +24,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/view/Application.fxml"));
         stage.setScene(new Scene(root));
         stage.setTitle("Queue Monitor");
+        stage.setOnCloseRequest((w) -> Platform.exit());
         stage.show();
     }
 

@@ -1,0 +1,166 @@
+package com.jbi.controller;
+
+import com.jbi.api.QueueGetPayload;
+import com.jbi.api.QueueItem;
+import com.jbi.api.StatusResponse;
+import com.jbi.client.BlueskyService;
+import com.jbi.util.StatusBus;
+import javafx.beans.value.ChangeListener;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+public final class ReRunningPlanController implements Initializable {
+
+    @FXML private Button   copyBtn;
+    @FXML private Button   updateBtn;
+    @FXML private TextArea planTextArea;
+
+    private final BlueskyService svc = new BlueskyService();
+
+    private String lastRunningUid = "";
+
+    @Override public void initialize(URL u, ResourceBundle b) {
+        planTextArea.setEditable(false);
+        planTextArea.setStyle("-fx-focus-color: transparent;");
+        planTextArea.setStyle("-fx-faint-focus-color: transparent;");
+
+
+        render(StatusBus.latest().get());
+        ChangeListener<StatusResponse> statusL = (obs, o, n) -> render(n);
+        StatusBus.latest().addListener(statusL);
+
+        copyBtn .setOnAction(e -> copyToQueue());
+        updateBtn.setOnAction(e -> updateEnvironment());
+    }
+
+    private void render(StatusResponse st) {
+        if (st == null) {
+            planTextArea.clear();
+            lastRunningUid = "";
+            copyBtn.setDisable(true);
+            updateBtn.setDisable(true);
+            return;
+        }
+
+        boolean envExists   = st.workerEnvironmentExists();
+        String  mgrState    = nz(st.managerState());
+        String  wkrState    = nz(st.workerEnvironmentState());
+        String  ipkState    = nz(st.ipKernelState());
+        boolean runningNow  = st.runningItemUid() != null;
+
+        copyBtn .setDisable(!runningNow);   // RE monitor-mode does not exist in FX yet
+
+        boolean canUpd =
+                envExists &&
+                        "idle".equals(mgrState) &&
+                        "idle".equals(wkrState) &&
+                        !"busy".equals(ipkState);
+        updateBtn.setDisable(!canUpd);
+
+        String uid = st.runningItemUid();
+        if (uid == null) {                         // nothing running
+            planTextArea.clear();
+            lastRunningUid = "";
+            return;
+        }
+
+        QueueItem runningItem;
+        if (!uid.equals(lastRunningUid)) {         // new plan started
+            runningItem    = fetchRunningItem();
+            lastRunningUid = uid;
+        } else {
+            runningItem = null;                    // keep previous text, only update run-list
+        }
+        List<Map<String,Object>> runList = fetchRunList();
+
+        planTextArea.setText(format(runningItem, runList));
+        planTextArea.positionCaret(0);
+    }
+
+    private QueueItem fetchRunningItem() {
+        try {
+            QueueGetPayload p = svc.queueGetTyped();
+            return p.runningItem();                // may be null
+        } catch (Exception ignore) { return null; }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String,Object>> fetchRunList() {
+        try {
+            var env = svc.reRuns(null);
+            Object p = env.payload();
+            if (p instanceof Map<?,?> m && m.containsKey("run_list"))
+                return (List<Map<String,Object>>) m.get("run_list");
+        } catch (Exception ignore) {}
+        return List.of();
+    }
+
+    private static String format(QueueItem item, List<Map<String,Object>> runs) {
+        StringBuilder sb = new StringBuilder();
+
+        if (item != null) {
+            sb.append("Plan Name: ").append(item.name()).append('\n');
+
+            if (!item.args().isEmpty())
+                sb.append("Arguments: ")
+                        .append(String.join(", ", item.args().stream()
+                                .map(Object::toString).toList()))
+                        .append('\n');
+
+            if (!item.kwargs().isEmpty()) {
+                sb.append("Parameters:\n");
+                item.kwargs().forEach((k,v) ->
+                        sb.append("    ").append(k).append(": ").append(v).append('\n'));
+            }
+            if (item.meta() != null && !item.meta().isEmpty()) {
+                sb.append("Metadata:\n");
+                item.meta().forEach((k,v) ->
+                        sb.append("    ").append(k).append(": ").append(v).append('\n'));
+            }
+            sb.append('\n');
+        }
+
+        if (!runs.isEmpty()) {
+            sb.append("Runs:\n");
+            for (Map<String,Object> r : runs) {
+                String uid  = String.valueOf(r.get("uid"));
+                boolean open= Boolean.TRUE.equals(r.get("is_open"));
+                sb.append("    ").append(uid).append("  ");
+                sb.append(open ? "In progress ..." :
+                        "Exit status: " + r.get("exit_status"));
+                sb.append('\n');
+            }
+        }
+        return sb.toString();
+    }
+
+    @FXML
+    private void copyToQueue() {
+        QueueItem running = fetchRunningItem();
+        if (running == null) return;
+
+        try {
+            svc.queueItemAdd(running);
+        } catch (Exception ex) {
+            System.err.println("Copy-to-queue failed: " + ex.getMessage());
+        }
+    }
+
+
+    @FXML
+    private void updateEnvironment() {
+        try { svc.environmentUpdate(Map.of()); }
+        catch (Exception ex) {
+            System.err.println("Environment-update failed: " + ex.getMessage());
+        }
+    }
+
+    private static String nz(String s) { return s == null ? "" : s; }
+}
