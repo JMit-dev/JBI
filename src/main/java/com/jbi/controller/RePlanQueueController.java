@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.*;
@@ -21,21 +22,21 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 public final class RePlanQueueController implements Initializable {
 
     @FXML private TableView<Row>              table;
     @FXML private TableColumn<Row,Number>     idxCol;
-    @FXML private TableColumn<Row,String>     typeCol,nameCol,paramCol,userCol,grpCol;
-    @FXML private Button                      upBtn,downBtn,topBtn,bottomBtn,
-            deleteBtn,duplicateBtn,clearBtn,deselectBtn;
+    @FXML private TableColumn<Row,String>     typeCol, nameCol, paramCol, userCol, grpCol;
+    @FXML private Button                      upBtn, downBtn, topBtn, bottomBtn,
+            deleteBtn, duplicateBtn, clearBtn, deselectBtn;
     @FXML private ToggleButton                loopBtn;
 
-    private final RunEngineService      svc  = new RunEngineService();
-    private final ObservableList<Row>   rows = FXCollections.observableArrayList();
+
+    private final RunEngineService svc  = new RunEngineService();
+    private final ObservableList<Row> rows = FXCollections.observableArrayList();
     private final Map<String,QueueItem> uid2item = new HashMap<>();
-    private List<String>                stickySel = List.of();     // last user selection
-    private boolean                     ignoreSticky = false;      // guard while rebuilding
+    private List<String> stickySel   = List.of();   // last user selection
+    private boolean      ignoreSticky= false;       // guard while we rebuild
 
     private static final Logger LOG =
             Logger.getLogger(RePlanQueueController.class.getName());
@@ -62,8 +63,10 @@ public final class RePlanQueueController implements Initializable {
         hookButtons();
         updateButtonStates();
 
-        table.getSelectionModel().getSelectedItems().addListener(
-                (ListChangeListener<Row>) c -> { if (!ignoreSticky) stickySel = selectedUids(); });
+        table.getSelectionModel().getSelectedItems()
+                .addListener((ListChangeListener<Row>) c -> {
+                    if (!ignoreSticky) stickySel = selectedUids();
+                });
 
         ChangeListener<StatusResponse> poll =
                 (o,oldV,newV) -> Platform.runLater(() -> refresh(newV, List.of()));
@@ -78,9 +81,9 @@ public final class RePlanQueueController implements Initializable {
             ignoreSticky = true;
             rows.clear(); uid2item.clear();
             ignoreSticky = false;
-            updateButtonStates(); return;
+            updateButtonStates();
+            return;
         }
-
         try {
             QueueGetPayload qp = svc.queueGetTyped();
             ignoreSticky = true;
@@ -93,7 +96,8 @@ public final class RePlanQueueController implements Initializable {
             stickySel = focus;
 
             loopBtn.setSelected(Optional.ofNullable(st.planQueueMode())
-                    .map(StatusResponse.PlanQueueMode::loop).orElse(false));
+                    .map(StatusResponse.PlanQueueMode::loop)
+                    .orElse(false));
         } catch (Exception ex) {
             LOG.warning("Queue refresh failed: " + ex.getMessage());
         }
@@ -103,12 +107,33 @@ public final class RePlanQueueController implements Initializable {
         rows.clear(); uid2item.clear();
         if (items == null) { updateButtonStates(); return; }
 
-        for (QueueItem q: items) {
+        for (QueueItem q : items) {
             rows.add(new Row(q.itemUid(), q.itemType(), q.name(),
                     fmtParams(q), q.user(), q.userGroup()));
             uid2item.put(q.itemUid(), q);
         }
         updateButtonStates();
+        autoResizeColumns();
+    }
+
+
+    private void autoResizeColumns() {
+        table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        for (TableColumn<Row,?> col : table.getColumns()) {
+
+            Text tmp = new Text(col.getText());
+            double max = tmp.getLayoutBounds().getWidth();
+
+            for (int i = 0; i < rows.size(); i++) {
+                Object cell = col.getCellData(i);
+                if (cell != null) {
+                    tmp = new Text(cell.toString());
+                    double w = tmp.getLayoutBounds().getWidth();
+                    if (w > max) max = w;
+                }
+            }
+            col.setPrefWidth(max + 14);
+        }
     }
 
     private void applyFocus(Collection<String> uids) {
@@ -125,7 +150,7 @@ public final class RePlanQueueController implements Initializable {
                 if (first == -1) first = i;
             }
         }
-        if (first != -1) table.requestFocus();         // blue highlight
+        if (first != -1) table.requestFocus();
     }
     private void refreshLater(Collection<String> focus) {
         Platform.runLater(() -> refresh(StatusBus.latest().get(), focus));
@@ -278,29 +303,24 @@ public final class RePlanQueueController implements Initializable {
         });
     }
 
-    private List<String> selectedUids(){
+    private List<String> selectedUids() {
         return table.getSelectionModel().getSelectedItems()
                 .stream().map(Row::uid).toList();
     }
-    private static String firstLetter(String s){
-        return (s==null||s.isBlank())?"":s.substring(0,1).toUpperCase();
+    private static String firstLetter(String s) {
+        return (s == null || s.isBlank()) ? "" : s.substring(0, 1).toUpperCase();
     }
-    private static String fmtParams(QueueItem q){
-        List<Object> args = Optional.ofNullable(q.args()).orElse(List.of());
-        Map<String,Object> kw = Optional.ofNullable(q.kwargs()).orElse(Map.of());
-        String a = args.stream().map(Object::toString).collect(Collectors.joining(", "));
-        String k = kw.entrySet().stream()
-                .map(e -> e.getKey()+": "+e.getValue())
+    private static String fmtParams(QueueItem q) {
+        String a = Optional.ofNullable(q.args()).orElse(List.of())
+                .stream().map(Object::toString)
                 .collect(Collectors.joining(", "));
-        return Stream.of(a,k).filter(s->!s.isEmpty())
+        String k = Optional.ofNullable(q.kwargs()).orElse(Map.of())
+                .entrySet().stream()
+                .map(e -> e.getKey() + ": " + e.getValue())
+                .collect(Collectors.joining(", "));
+        return Stream.of(a, k).filter(s -> !s.isEmpty())
                 .collect(Collectors.joining(", "));
     }
-    private static String metaField(QueueItem q,String key){
-        return Optional.ofNullable(q.meta())
-                .map(m -> m.getOrDefault(key,"")).map(Object::toString)
-                .orElse("");
-    }
-
-    private record Row(String uid,String itemType,String name,
-                       String params,String user,String group){}
+    private record Row(String uid, String itemType, String name,
+                       String params, String user, String group) {}
 }
