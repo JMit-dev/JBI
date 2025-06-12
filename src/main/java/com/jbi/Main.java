@@ -24,6 +24,8 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/view/Application.fxml"));
         stage.setScene(new Scene(root));
         stage.setTitle("Queue Monitor");
+        stage.setMinWidth(1010);
+        stage.setMinHeight(710);
         stage.setOnCloseRequest((w) -> Platform.exit());
         stage.show();
     }
