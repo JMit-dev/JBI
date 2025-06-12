@@ -2,6 +2,9 @@ package com.jbi.client;
 
 import com.jbi.api.*;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Exhaustive façade: one method per QueueServer REST endpoint.
  *
@@ -51,12 +54,53 @@ public final class RunEngineService {
         return queueItemAdd(item, "GUI Client", "primary");
     }
 
+    public QueueGetPayload queueGetTyped() throws Exception {
+        return http.send(ApiEndpoint.QUEUE_GET, NoBody.INSTANCE, QueueGetPayload.class);
+    }
+
+    public void moveSingle(QueueItemMove dto)       throws Exception {
+        http.call(ApiEndpoint.QUEUE_ITEM_MOVE, dto);
+    }
+    public void moveSingle(String uid, String ref, boolean before) throws Exception {
+        moveSingle(before ? QueueItemMove.before(uid, ref)
+                : QueueItemMove.after (uid, ref));
+    }
+
+    public void moveBatch(QueueItemMoveBatch dto)   throws Exception {
+        http.call(ApiEndpoint.QUEUE_ITEM_MOVE_BATCH, dto);
+    }
+    public void moveBatch(List<String> uids, String ref, boolean before) throws Exception {
+        moveBatch(before ? QueueItemMoveBatch.before(uids, ref)
+                : QueueItemMoveBatch.after (uids, ref));
+    }
+
+    public String addAfter(QueueItem item, String afterUid) throws Exception {
+        var req = Map.of(
+                "item",        QueueItemAdd.Item.from(item),
+                "after_uid",   afterUid,
+                "user",        "GUI Client",
+                "user_group",  "primary");
+        Envelope<?> env = queueItemAdd(req);
+
+        Object payload = env.payload();
+        if (payload instanceof Map<?,?> p) {
+            Object itm = p.get("item");
+            if (itm instanceof Map<?,?> m) {
+                Object uid = m.get("item_uid");
+                if (uid != null) return uid.toString();
+            }
+        }
+        return null;
+    }
+
     public Envelope<?>          queueItemAddBatch(Object b ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD_BATCH, b); }
+    public Envelope<?>          queueItemAddBatch(QueueItemMoveBatch body ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD_BATCH, body); }
     public Envelope<?>          queueItemGet(Object params ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_GET,  params); }
     public Envelope<?>          queueItemUpdate(Object b   ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_UPDATE, b); }
     public Envelope<?>          queueItemRemove(Object b   ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_REMOVE, b); }
     public Envelope<?>          queueItemRemoveBatch(Object b) throws Exception {return http.call(ApiEndpoint.QUEUE_ITEM_REMOVE_BATCH,b); }
     public Envelope<?>          queueItemMove(Object b     ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_MOVE,   b); }
+    public Envelope<?>          queueItemMove(QueueItemMove body) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_MOVE,   body); }
     public Envelope<?>          queueItemMoveBatch(Object b) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_MOVE_BATCH,b);}
     public Envelope<?>          queueItemExecute(Object b  ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_EXECUTE,b); }
 
@@ -122,11 +166,4 @@ public final class RunEngineService {
     public Envelope<?>          whoAmI()                      throws Exception { return http.call(ApiEndpoint.WHOAMI,        NoBody.INSTANCE); }
     public Envelope<?>          apiScopes()                   throws Exception { return http.call(ApiEndpoint.API_SCOPES,    NoBody.INSTANCE); }
     public Envelope<?>          logout()                      throws Exception { return http.call(ApiEndpoint.LOGOUT,       NoBody.INSTANCE); }
-
-    /* ---- Helpers --------------------------------------------------------- */
-
-    public QueueGetPayload queueGetTyped() throws Exception {
-        return http.send(ApiEndpoint.QUEUE_GET, NoBody.INSTANCE, QueueGetPayload.class);
-    }
-
 }

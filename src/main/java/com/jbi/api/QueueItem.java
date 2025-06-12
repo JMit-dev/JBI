@@ -11,5 +11,7 @@ public record QueueItem(
         List<Object> args,
         Map<String,Object> kwargs,
         @JsonProperty("item_uid") String itemUid,
+        String user,
+        @JsonProperty("user_group") String userGroup,
         Map<String,Object> meta
 ) {}

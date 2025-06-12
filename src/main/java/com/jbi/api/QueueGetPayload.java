@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public record QueueGetPayload(
+
+        @JsonProperty("items")
         List<QueueItem> queue,
 
         @JsonProperty("running_item")  QueueItem runningItem,
