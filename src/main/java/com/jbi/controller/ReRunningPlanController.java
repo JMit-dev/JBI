@@ -35,9 +35,6 @@ public final class ReRunningPlanController implements Initializable {
         render(StatusBus.latest().get());
         ChangeListener<StatusResponse> statusL = (obs, o, n) -> render(n);
         StatusBus.latest().addListener(statusL);
-
-        copyBtn .setOnAction(e -> copyToQueue());
-        updateBtn.setOnAction(e -> updateEnvironment());
     }
 
     private void render(StatusResponse st) {
