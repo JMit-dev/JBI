@@ -18,9 +18,9 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class BlueskyHttpClient {
+public final class RunEngineHttpClient {
 
-    private static volatile BlueskyHttpClient INSTANCE;
+    private static volatile RunEngineHttpClient INSTANCE;
 
     // Default 10 req/sec
     public static void initialize(String baseUrl, String apiKey) {
@@ -28,14 +28,14 @@ public final class BlueskyHttpClient {
     }
     public static void initialize(String baseUrl, String apiKey, double permitsPerSecond) {
         if (INSTANCE == null) {
-            synchronized (BlueskyHttpClient.class) {
+            synchronized (RunEngineHttpClient.class) {
                 if (INSTANCE == null)
-                    INSTANCE = new BlueskyHttpClient(baseUrl, apiKey, permitsPerSecond);
+                    INSTANCE = new RunEngineHttpClient(baseUrl, apiKey, permitsPerSecond);
             }
         }
     }
-    public static BlueskyHttpClient get() {
-        if (INSTANCE == null) throw new IllegalStateException("BlueskyHttpClient not initialised");
+    public static RunEngineHttpClient get() {
+        if (INSTANCE == null) throw new IllegalStateException("RunEngineHttpClient not initialised");
         return INSTANCE;
     }
 
@@ -48,7 +48,7 @@ public final class BlueskyHttpClient {
     private final RateLimiter limiter;
     private static final Logger LOG = HttpSupport.LOG;
 
-    private BlueskyHttpClient(String baseUrl, String apiKey, double permitsPerSecond) {
+    private RunEngineHttpClient(String baseUrl, String apiKey, double permitsPerSecond) {
         this.http = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(5))

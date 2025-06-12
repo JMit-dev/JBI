@@ -1,6 +1,6 @@
 package com.jbi;
 
-import com.jbi.client.BlueskyHttpClient;
+import com.jbi.client.RunEngineHttpClient;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +19,7 @@ public class Main extends Application {
             return;
         }
 
-        BlueskyHttpClient.initialize(baseUrl, apiKey);  // singleton init
+        RunEngineHttpClient.initialize(baseUrl, apiKey);  // singleton init
 
         Parent root = FXMLLoader.load(getClass().getResource("/view/Application.fxml"));
         stage.setScene(new Scene(root));

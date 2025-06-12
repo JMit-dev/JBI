@@ -2,7 +2,7 @@ package com.jbi.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jbi.client.*;
-import com.jbi.client.BlueskyHttpClient.*;
+import com.jbi.client.RunEngineHttpClient.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,8 +37,8 @@ public final class RunEngineCli {
         String key = System.getenv("BLUESKY_API_KEY");
         if (key == null) { System.err.println("BLUESKY_API_KEY missing"); System.exit(1); }
 
-        BlueskyHttpClient.initialize("http://localhost:60610", key);
-        var client = BlueskyHttpClient.get();
+        RunEngineHttpClient.initialize("http://localhost:60610", key);
+        var client = RunEngineHttpClient.get();
 
         try {
             if ("list".equalsIgnoreCase(args[0])) {

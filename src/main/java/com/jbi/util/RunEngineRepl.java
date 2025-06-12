@@ -3,7 +3,7 @@ package com.jbi.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jbi.client.*;
-        import com.jbi.client.BlueskyHttpClient.*;
+        import com.jbi.client.RunEngineHttpClient.*;
 
         import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -21,8 +21,8 @@ public final class RunEngineRepl {
         String key = System.getenv("BLUESKY_API_KEY");
         if (key == null) { System.out.println("BLUESKY_API_KEY missing"); return; }
 
-        BlueskyHttpClient.initialize("http://localhost:60610", key);
-        var client  = BlueskyHttpClient.get();
+        RunEngineHttpClient.initialize("http://localhost:60610", key);
+        var client  = RunEngineHttpClient.get();
         var console = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("""

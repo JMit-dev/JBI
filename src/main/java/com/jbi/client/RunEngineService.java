@@ -5,18 +5,18 @@ import com.jbi.api.*;
 /**
  * Exhaustive façade: one method per QueueServer REST endpoint.
  *
- * <p>Each method blocks, calls {@link BlueskyHttpClient#call(ApiEndpoint, Object)},
+ * <p>Each method blocks, calls {@link RunEngineHttpClient#call(ApiEndpoint, Object)},
  * and returns the raw {@link Envelope}.  Pass {@code null} or {@link NoBody#INSTANCE}
  * when no JSON request body is needed.  The envelope’s {@code payload()} is
  * usually a {@code Map&lt;String,Object&gt;} (typed DTOs exist only for STATUS
  * and QUEUE_GET).</p>
  *
- * <p>All errors propagate as {@link BlueskyHttpClient.BlueskyException} or
+ * <p>All errors propagate as {@link RunEngineHttpClient.BlueskyException} or
  * {@link java.io.IOException} / {@link java.net.http.HttpTimeoutException}.</p>
  */
 public final class RunEngineService {
 
-    private final BlueskyHttpClient http = BlueskyHttpClient.get();
+    private final RunEngineHttpClient http = RunEngineHttpClient.get();
 
     /* ---- Ping & status --------------------------------------------------- */
 
