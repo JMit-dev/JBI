@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
-public final class BlueskyCli {
+public final class RunEngineCli {
 
     private static final ObjectMapper JSON = new ObjectMapper();
 

@@ -3,7 +3,7 @@ package com.jbi.controller;
 import com.jbi.api.QueueGetPayload;
 import com.jbi.api.QueueItem;
 import com.jbi.api.StatusResponse;
-import com.jbi.client.BlueskyService;
+import com.jbi.client.RunEngineService;
 import com.jbi.util.StatusBus;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -22,7 +22,7 @@ public final class ReRunningPlanController implements Initializable {
     @FXML private Button   updateBtn;
     @FXML private TextArea planTextArea;
 
-    private final BlueskyService svc = new BlueskyService();
+    private final RunEngineService svc = new RunEngineService();
 
     private String lastRunningUid = "";
 

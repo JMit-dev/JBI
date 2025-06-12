@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Map;
 
-public final class BlueskyRepl {
+public final class RunEngineRepl {
 
     private static final String PROMPT   = "> ";
     private static final ObjectMapper JSON = new ObjectMapper();

@@ -14,7 +14,7 @@ import com.jbi.api.*;
  * <p>All errors propagate as {@link BlueskyHttpClient.BlueskyException} or
  * {@link java.io.IOException} / {@link java.net.http.HttpTimeoutException}.</p>
  */
-public final class BlueskyService {
+public final class RunEngineService {
 
     private final BlueskyHttpClient http = BlueskyHttpClient.get();
 

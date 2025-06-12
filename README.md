@@ -54,17 +54,17 @@ mvn -Djava.util.logging.config.file=src/main/resources/logging.properties javafx
 
 | Tool     | Start (quiet)                                                                         | Start with request tracing (`FINE`)                                                                                                                        |
 | -------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **CLI**  | `mvn -q -Dexec.mainClass=com.jbi.util.BlueskyCli  -Dexec.args="STATUS" exec:java` | `mvn -Djava.util.logging.config.file=src/main/resources/logging.properties -q -Dexec.mainClass=com.jbi.util.BlueskyCli -Dexec.args="STATUS" exec:java` |
-| **REPL** | `mvn -q -Dexec.mainClass=com.jbi.util.BlueskyRepl exec:java`                          | `mvn -Djava.util.logging.config.file=src/main/resources/logging.properties -q -Dexec.mainClass=com.jbi.util.BlueskyRepl -Dexec.args="STATUS" exec:java`                                                                                                                         |
+| **CLI**  | `mvn -q -Dexec.mainClass=com.jbi.util.RunEngineCli  -Dexec.args="STATUS" exec:java` | `mvn -Djava.util.logging.config.file=src/main/resources/logging.properties -q -Dexec.mainClass=com.jbi.util.RunEngineCli -Dexec.args="STATUS" exec:java` |
+| **REPL** | `mvn -q -Dexec.mainClass=com.jbi.util.RunEngineRepl exec:java`                          | `mvn -Djava.util.logging.config.file=src/main/resources/logging.properties -q -Dexec.mainClass=com.jbi.util.RunEngineRepl -Dexec.args="STATUS" exec:java`                                                                                                                         |
 
 *CLI examples*
 
 ```bash
 # list endpoints
-mvn -q -Dexec.mainClass=com.jbi.util.BlueskyCli -Dexec.args="list" exec:java
+mvn -q -Dexec.mainClass=com.jbi.util.RunEngineClili -Dexec.args="list" exec:java
 
 # start the queue
-mvn -q -Dexec.mainClass=com.jbi.util.BlueskyCli -Dexec.args="QUEUE_START" exec:java
+mvn -q -Dexec.mainClass=com.jbi.util.RunEngineClili -Dexec.args="QUEUE_START" exec:java
 ```
 
 `ENDPOINT [body]` accepts a JSON literal, `@file.json`, or `@-` for stdin.

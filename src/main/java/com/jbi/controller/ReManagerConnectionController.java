@@ -1,7 +1,7 @@
 package com.jbi.controller;
 
 import com.jbi.api.StatusResponse;
-import com.jbi.client.BlueskyService;
+import com.jbi.client.RunEngineService;
 import com.jbi.util.PollCenter;
 import com.jbi.util.StatusBus;
 import javafx.fxml.FXML;
@@ -16,7 +16,7 @@ public final class ReManagerConnectionController {
     @FXML private Button disconnectButton;
     @FXML private Label  connectionStatusLabel;
 
-    private final BlueskyService svc = new BlueskyService();
+    private final RunEngineService svc = new RunEngineService();
     private ScheduledFuture<?>   pollTask;
     private static final int PERIOD_SEC = 1;
 
