@@ -58,6 +58,10 @@ public final class RunEngineHttpClient {
         this.limiter = new RateLimiter(permitsPerSecond);
     }
 
+    // getters
+    public String getBaseUrl() { return base; }
+    public String getApiKey() { return apiKey; }
+    public HttpClient httpClient() { return http; }
 
     public Envelope<?> call(ApiEndpoint ep, Object body) throws Exception {
         Object requestBody = (body == NoBody.INSTANCE) ? null : body;
@@ -86,6 +90,19 @@ public final class RunEngineHttpClient {
         return executeWithRetry(req, api, rsp -> {
             try { return mapper.readValue(rsp.body(), ref); }
             catch (Exception e) { throw new RuntimeException(e); }
+        });
+    }
+
+    <T> T send(ApiEndpoint api, Object body, Class<T> type, String extraQuery) throws Exception {
+        Endpoint ep = api.endpoint();
+        String path = ep.path() + (extraQuery == null ? "" : extraQuery);
+        HttpRequest req = build(new Endpoint(ep.method(), path), body);
+        return executeWithRetry(req, api, rsp -> {
+            try {
+                return mapper.readValue(rsp.body(), type);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

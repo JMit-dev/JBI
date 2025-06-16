@@ -2,6 +2,13 @@ package com.jbi.client;
 
 import com.jbi.api.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -133,6 +140,40 @@ public final class RunEngineService {
 
     public Envelope<?>          historyGet()                 throws Exception { return http.call(ApiEndpoint.HISTORY_GET,      NoBody.INSTANCE); }
     public Envelope<?>          historyClear()               throws Exception { return http.call(ApiEndpoint.HISTORY_CLEAR,    NoBody.INSTANCE); }
+
+
+    /* ───────── Console monitor ───────── */
+
+    public InputStream streamConsoleOutput() throws Exception {
+        HttpRequest req = HttpRequest.newBuilder()
+                .uri(URI.create(http.getBaseUrl() + ApiEndpoint.STREAM_CONSOLE_OUTPUT.endpoint().path()))
+                .header("Authorization", "ApiKey " + http.getApiKey())
+                .GET()
+                .build();
+        // no retry/limiting – you open it once and keep reading
+        HttpResponse<InputStream> rsp =
+                http.httpClient().send(req, HttpResponse.BodyHandlers.ofInputStream());
+        if (rsp.statusCode() < 200 || rsp.statusCode() >= 300) {
+            throw new IOException("console stream - HTTP " + rsp.statusCode());
+        }
+        return rsp.body();
+    }
+
+    public ConsoleOutputText consoleOutput(int nLines) throws Exception {
+        String q = "?nlines=" + nLines;
+        return http.send(ApiEndpoint.CONSOLE_OUTPUT, null,
+                ConsoleOutputText.class, q);
+    }
+
+    public ConsoleOutputUid consoleOutputUid() throws Exception {
+        return http.send(ApiEndpoint.CONSOLE_OUTPUT_UID, null, ConsoleOutputUid.class);
+    }
+
+    public ConsoleOutputUpdate consoleOutputUpdate(String lastUid) throws Exception {
+        String q = "?last_msg_uid=" + URLEncoder.encode(lastUid, StandardCharsets.UTF_8);
+        return http.send(ApiEndpoint.CONSOLE_OUTPUT_UPDATE, null,
+                ConsoleOutputUpdate.class, q);
+    }
 
     /* ---- Environment ----------------------------------------------------- */
 
