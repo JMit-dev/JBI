@@ -11,7 +11,7 @@
             <fx:include source="ReRunningPlan.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="68.0" layoutY="375.0" prefHeight="240.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="68.0" AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="375.0">
+      <AnchorPane layoutX="68.0" layoutY="375.0" prefHeight="220.0" AnchorPane.leftAnchor="68.0" AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="375.0">
          <children>
             <fx:include source="RePlanQueue.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children>
@@ -26,5 +26,10 @@
             <fx:include source="ReStatusMonitor.fxml" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
+      <AnchorPane layoutX="68.0" layoutY="619.0" prefHeight="220.0" AnchorPane.leftAnchor="68.0" AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="619.0">
+         <children>
+            <fx:include source="RePlanHistory.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

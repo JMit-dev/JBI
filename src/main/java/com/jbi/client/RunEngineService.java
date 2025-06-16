@@ -27,36 +27,43 @@ public final class RunEngineService {
     public StatusResponse status() throws Exception { return http.send(ApiEndpoint.STATUS, NoBody.INSTANCE, StatusResponse.class); }
     public Envelope<?>          configGet()                  throws Exception { return http.call(ApiEndpoint.CONFIG_GET,      NoBody.INSTANCE); }
 
+    /* ───────── Queue – typed helpers ───────── */
+
+    public QueueGetPayload queueGetTyped() throws Exception {
+        return http.send(ApiEndpoint.QUEUE_GET, NoBody.INSTANCE, QueueGetPayload.class);
+    }
+
+    public HistoryGetPayload historyGetTyped() throws Exception {
+        return http.send(ApiEndpoint.HISTORY_GET, NoBody.INSTANCE, HistoryGetPayload.class);
+    }
+
     /* ---- Queue control --------------------------------------------------- */
 
-    public Envelope<?>          queueStart()                 throws Exception { return http.call(ApiEndpoint.QUEUE_START,     NoBody.INSTANCE); }
-    public Envelope<?>          queueStop()                  throws Exception { return http.call(ApiEndpoint.QUEUE_STOP,      NoBody.INSTANCE); }
-    public Envelope<?>          queueStopCancel()            throws Exception { return http.call(ApiEndpoint.QUEUE_STOP_CANCEL,NoBody.INSTANCE); }
-    public Envelope<?>          queueGet()                   throws Exception { return http.call(ApiEndpoint.QUEUE_GET,       NoBody.INSTANCE); }
-    public Envelope<?>          queueClear()                 throws Exception { return http.call(ApiEndpoint.QUEUE_CLEAR,     NoBody.INSTANCE); }
-    public Envelope<?>          queueAutostart(Object body)  throws Exception { return http.call(ApiEndpoint.QUEUE_AUTOSTART, body); } // {"enable":true}
-    public Envelope<?>          queueModeSet(Object body)    throws Exception { return http.call(ApiEndpoint.QUEUE_MODE_SET,  body); } // {"mode":"loop"}
-    public Envelope<?>          queueItemAdd(Object rawBody) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD, rawBody);
-    }
+    public Envelope<?> queueStart()          throws Exception { return http.call(ApiEndpoint.QUEUE_START,      NoBody.INSTANCE); }
+    public Envelope<?> queueStop()           throws Exception { return http.call(ApiEndpoint.QUEUE_STOP,       NoBody.INSTANCE); }
+    public Envelope<?> queueStopCancel()     throws Exception { return http.call(ApiEndpoint.QUEUE_STOP_CANCEL,NoBody.INSTANCE); }
+    public Envelope<?> queueGet()            throws Exception { return http.call(ApiEndpoint.QUEUE_GET,        NoBody.INSTANCE); }
+    public Envelope<?> queueClear()          throws Exception { return http.call(ApiEndpoint.QUEUE_CLEAR,      NoBody.INSTANCE); }
+    public Envelope<?> queueAutostart(Object body) throws Exception { return http.call(ApiEndpoint.QUEUE_AUTOSTART, body); }
+    public Envelope<?> queueModeSet(Object body)   throws Exception { return http.call(ApiEndpoint.QUEUE_MODE_SET,  body); }
+
+    /* ---- single-item add ------------------------------------------------ */
+
+    public Envelope<?> queueItemAdd(Object body)   throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD, body); }
 
     public Envelope<?> queueItemAdd(QueueItem item,
                                     String   user,
                                     String   group) throws Exception {
 
-        var req = new QueueItemAdd(
-                QueueItemAdd.Item.from(item),
-                user,
-                group);
-
+        QueueItemAdd req = new QueueItemAdd(QueueItemAdd.Item.from(item), user, group);
         return queueItemAdd(req);
     }
+
     public Envelope<?> queueItemAdd(QueueItem item) throws Exception {
         return queueItemAdd(item, "GUI Client", "primary");
     }
 
-    public QueueGetPayload queueGetTyped() throws Exception {
-        return http.send(ApiEndpoint.QUEUE_GET, NoBody.INSTANCE, QueueGetPayload.class);
-    }
+    /* ---- move helpers --------------------------------------------------- */
 
     public void moveSingle(QueueItemMove dto)       throws Exception {
         http.call(ApiEndpoint.QUEUE_ITEM_MOVE, dto);
@@ -74,26 +81,44 @@ public final class RunEngineService {
                 : QueueItemMoveBatch.after (uids, ref));
     }
 
+    /* ---- duplicate helper ---------------------------------------------- */
+
     public String addAfter(QueueItem item, String afterUid) throws Exception {
-        var req = Map.of(
-                "item",        QueueItemAdd.Item.from(item),
-                "after_uid",   afterUid,
-                "user",        "GUI Client",
-                "user_group",  "primary");
-        Envelope<?> env = queueItemAdd(req);
+        QueueItemAdd req = new QueueItemAdd(QueueItemAdd.Item.from(item),
+                "GUI Client", "primary");
+        Map<String,Object> body = Map.of(
+                "item",       req.item(),
+                "after_uid",  afterUid,
+                "user",       req.user(),
+                "user_group", req.userGroup());
+
+        Envelope<?> env = queueItemAdd(body);
 
         Object payload = env.payload();
-        if (payload instanceof Map<?,?> p) {
-            Object itm = p.get("item");
-            if (itm instanceof Map<?,?> m) {
-                Object uid = m.get("item_uid");
-                if (uid != null) return uid.toString();
-            }
+        if (payload instanceof Map<?,?> p &&
+                p.get("item") instanceof Map<?,?> m &&
+                m.get("item_uid") != null) {
+            return m.get("item_uid").toString();
         }
         return null;
     }
 
-    public Envelope<?>          queueItemAddBatch(Object b ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD_BATCH, b); }
+    /* ---- batch-add helpers --------------------------------------------- */
+
+    public Envelope<?> queueItemAddBatch(Object body) throws Exception {
+        return http.call(ApiEndpoint.QUEUE_ITEM_ADD_BATCH, body);
+    }
+
+    public Envelope<?> queueItemAddBatch(QueueItemAddBatch req) throws Exception {
+        return http.call(ApiEndpoint.QUEUE_ITEM_ADD_BATCH, req);
+    }
+
+    public Envelope<?> queueItemAddBatch(List<QueueItem> items,
+                                         String user,
+                                         String group) throws Exception {
+        return queueItemAddBatch(new QueueItemAddBatch(items, user, group));
+    }
+
     public Envelope<?>          queueItemAddBatch(QueueItemMoveBatch body ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_ADD_BATCH, body); }
     public Envelope<?>          queueItemGet(Object params ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_GET,  params); }
     public Envelope<?>          queueItemUpdate(Object b   ) throws Exception { return http.call(ApiEndpoint.QUEUE_ITEM_UPDATE, b); }

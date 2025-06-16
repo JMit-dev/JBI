@@ -13,5 +13,6 @@ public record QueueItem(
         @JsonProperty("item_uid") String itemUid,
         String user,
         @JsonProperty("user_group") String userGroup,
-        Map<String,Object> meta
+        Map<String,Object> meta,
+        Map<String,Object> result
 ) {}
