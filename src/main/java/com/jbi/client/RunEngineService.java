@@ -1,5 +1,6 @@
 package com.jbi.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jbi.api.*;
 
 import java.io.IOException;
@@ -169,11 +170,35 @@ public final class RunEngineService {
         return http.send(ApiEndpoint.CONSOLE_OUTPUT_UID, null, ConsoleOutputUid.class);
     }
 
+    private static final ObjectMapper JSON = new ObjectMapper();
+
+
     public ConsoleOutputUpdate consoleOutputUpdate(String lastUid) throws Exception {
-        String q = "?last_msg_uid=" + URLEncoder.encode(lastUid, StandardCharsets.UTF_8);
-        return http.send(ApiEndpoint.CONSOLE_OUTPUT_UPDATE, null,
-                ConsoleOutputUpdate.class, q);
+        String bodyJson = JSON.writeValueAsString(Map.of("last_msg_uid", lastUid));
+
+        HttpRequest req = HttpRequest.newBuilder()
+                .uri(URI.create(
+                        http.getBaseUrl() +
+                                ApiEndpoint.CONSOLE_OUTPUT_UPDATE
+                                        .endpoint()
+                                        .path()))
+                .header("Authorization", "ApiKey " + http.getApiKey())
+                .header("Content-Type",  "application/json")
+                .method("GET", HttpRequest.BodyPublishers.ofString(bodyJson))
+                .build();
+
+        HttpResponse<String> rsp =
+                http.httpClient().send(req, HttpResponse.BodyHandlers.ofString());
+
+        if (rsp.statusCode() < 200 || rsp.statusCode() >= 300) {
+            throw new IOException("console_output_update – HTTP "
+                    + rsp.statusCode() + " – " + rsp.body());
+        }
+
+        return JSON.readValue(rsp.body(), ConsoleOutputUpdate.class);
     }
+
+
 
     /* ---- Environment ----------------------------------------------------- */
 
