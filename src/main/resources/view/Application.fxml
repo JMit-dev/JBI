@@ -36,5 +36,10 @@
             <fx:include source="ReConsoleMonitor.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
+      <Pane layoutX="505.0" layoutY="40.0">
+         <children>
+            <fx:include source="ReEnvironmentControls.fxml" />
+         </children>
+      </Pane>
    </children>
 </AnchorPane>
