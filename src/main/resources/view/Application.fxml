@@ -1,14 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
-
+<AnchorPane prefHeight="710.0" prefWidth="965.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbi.controller.ApplicationController">
+   <children>
+      <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Control Actions">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#toggleDestroyActivation" text="Activate 'Destroy Environment'">
+                     <graphic>
+                        <CheckBox fx:id="activateDestroyChk" mnemonicParsing="false" onAction="#toggleDestroyActivation" />
+                     </graphic>
+                  </MenuItem>
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Save and Backup">
+            <items>
+              <MenuItem fx:id="savePlanTxt" mnemonicParsing="false" onAction="#savePlanTxt" text="Save Plan History (as .txt)" />
+                  <MenuItem fx:id="savePlanJson" mnemonicParsing="false" onAction="#savePlanJson" text="Save Plan History (as .json)" />
+                  <MenuItem fx:id="savePlanYaml" mnemonicParsing="false" onAction="#savePlanYaml" text="Save Plan History (as .yaml)" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <TabPane layoutY="27.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
+        <tabs>
+          <Tab fx:id="monitorQueueTab" text="Monitor Queue">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="169.0" prefWidth="301.0" />
+            </content>
+          </Tab>
+          <Tab fx:id="editAndControlQueueTab" text="Edit and Control Queue">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
 </AnchorPane>
