@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane minHeight="710.0" minWidth="1010.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane minHeight="710.0" minWidth="1010.0" xmlns="http://javafx.com/javafx/21  " xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane layoutX="68.0" layoutY="217.0" minHeight="130.0" minWidth="600.0" prefHeight="130.0" prefWidth="600.0" AnchorPane.leftAnchor="68.0" AnchorPane.rightAnchor="68.0">
          <children>
@@ -39,6 +39,11 @@
       <Pane layoutX="505.0" layoutY="40.0">
          <children>
             <fx:include source="ReEnvironmentControls.fxml" />
+         </children>
+      </Pane>
+      <Pane layoutX="655.0" layoutY="40.0">
+         <children>
+            <fx:include source="ReQueueControls.fxml" />
          </children>
       </Pane>
    </children>

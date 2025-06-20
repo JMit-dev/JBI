@@ -12,7 +12,7 @@
    <children>
       <VBox prefHeight="130.0" prefWidth="160.0">
          <children>
-            <Label text="Environment" />
+            <Label text="Queue" />
             <VBox alignment="CENTER" style="-fx-border-color: #d9d9d9; -fx-border-radius: 2; -fx-border-width: 2; -fx-background-color: #f8f8f8;" VBox.vgrow="ALWAYS">
                <children>
                   <Label fx:id="reStatusLabel" text="STOPPED">
@@ -22,11 +22,11 @@
                   </Label>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                      <children>
-                        <Button fx:id="startBtn" disable="true" mnemonicParsing="false" onAction="#start" prefWidth="80.0" text="Start" />
-                        <CheckBox fx:id="autoChk" disable="true" mnemonicParsing="false" onAction="#auto" text="auto" />
+                        <Button fx:id="startBtn" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Start" />
+                        <CheckBox fx:id="autoChk" disable="true" mnemonicParsing="false" text="auto" />
                      </children>
                   </HBox>
-                  <Button fx:id="stopBtn" disable="true" mnemonicParsing="false" onAction="#stop" prefWidth="142.0" text="Stop">
+                  <Button fx:id="stopBtn" disable="true" mnemonicParsing="false" prefWidth="142.0" text="Stop">
                      <VBox.margin>
                         <Insets bottom="5.0" />
                      </VBox.margin>
