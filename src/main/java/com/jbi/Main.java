@@ -21,7 +21,7 @@ public class Main extends Application {
 
         RunEngineHttpClient.initialize(baseUrl, apiKey);  // singleton init
 
-        Parent root = FXMLLoader.load(getClass().getResource("/view/Application.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/MonitorQueue.fxml"));
         stage.setScene(new Scene(root));
         stage.setTitle("Queue Monitor");
         stage.setMinWidth(1010);
