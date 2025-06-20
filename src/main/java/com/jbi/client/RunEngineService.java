@@ -53,6 +53,7 @@ public final class RunEngineService {
     public Envelope<?> queueGet()            throws Exception { return http.call(ApiEndpoint.QUEUE_GET,        NoBody.INSTANCE); }
     public Envelope<?> queueClear()          throws Exception { return http.call(ApiEndpoint.QUEUE_CLEAR,      NoBody.INSTANCE); }
     public Envelope<?> queueAutostart(Object body) throws Exception { return http.call(ApiEndpoint.QUEUE_AUTOSTART, body); }
+    public Envelope<?> queueAutostart(boolean enable) throws Exception { return queueAutostart(Map.of("enable", enable)); }
     public Envelope<?> queueModeSet(Object body)   throws Exception { return http.call(ApiEndpoint.QUEUE_MODE_SET,  body); }
 
     /* ---- single-item add ------------------------------------------------ */
@@ -210,6 +211,12 @@ public final class RunEngineService {
     /* ---- Run Engine control --------------------------------------------- */
 
     public Envelope<?>          rePause()                    throws Exception { return http.call(ApiEndpoint.RE_PAUSE,  NoBody.INSTANCE); }
+    public Envelope<?> rePause(String option) throws Exception {
+        if (option == null || option.isBlank())
+            option = "deferred";                       // QS default
+        return http.call(ApiEndpoint.RE_PAUSE, Map.of("option", option));
+    }
+
     public Envelope<?>          reResume()                   throws Exception { return http.call(ApiEndpoint.RE_RESUME, NoBody.INSTANCE); }
     public Envelope<?>          reStop()                     throws Exception { return http.call(ApiEndpoint.RE_STOP,   NoBody.INSTANCE); }
     public Envelope<?>          reAbort()                    throws Exception { return http.call(ApiEndpoint.RE_ABORT,  NoBody.INSTANCE); }
@@ -244,7 +251,7 @@ public final class RunEngineService {
 
     /* ---- Kernel / Manager ------------------------------------------------ */
 
-    public Envelope<?>          kernelInterrupt()            throws Exception { return http.call(ApiEndpoint.KERNEL_INTERRUPT, NoBody.INSTANCE); }
+    public Envelope<?>          kernelInterrupt()            throws Exception { return http.call(ApiEndpoint.KERNEL_INTERRUPT, Map.of("interrupt_task", true)); }
     public Envelope<?>          managerStop()                throws Exception { return http.call(ApiEndpoint.MANAGER_STOP,     NoBody.INSTANCE); }
     public Envelope<?>          managerKill()                throws Exception { return http.call(ApiEndpoint.MANAGER_KILL,     NoBody.INSTANCE); }
 

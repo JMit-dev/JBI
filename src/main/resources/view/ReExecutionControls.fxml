@@ -16,21 +16,21 @@
                <children>
                   <HBox alignment="CENTER" prefWidth="200.0" spacing="10.0">
                      <children>
-                        <Button fx:id="pauseDefBtn" disable="true" mnemonicParsing="false" onAction="#pauseDeffered" prefWidth="129.0" text="Pause: Deferred" />
-                        <Button fx:id="pauseImmBtn" disable="true" mnemonicParsing="false" onAction="#pauseImmediate" prefWidth="129.0" text="Pause: Immediate" />
+                        <Button fx:id="pauseDefBtn" disable="true" mnemonicParsing="false" prefWidth="129.0" text="Pause: Deferred" />
+                        <Button fx:id="pauseImmBtn" disable="true" mnemonicParsing="false" prefWidth="129.0" text="Pause: Immediate" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefWidth="200.0" spacing="10.0">
                      <children>
-                        <Button fx:id="resumeBtn" disable="true" mnemonicParsing="false" onAction="#resume" prefWidth="129.0" text="Resume" />
-                        <Button fx:id="ctrlcBtn" disable="true" mnemonicParsing="false" onAction="#ctrlc" prefWidth="129.0" text="Ctrl-C" />
+                        <Button fx:id="resumeBtn" disable="true" mnemonicParsing="false" prefWidth="129.0" text="Resume" />
+                        <Button fx:id="ctrlcBtn" disable="true" mnemonicParsing="false" prefWidth="129.0" text="Ctrl-C" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefWidth="200.0" spacing="10.0">
                      <children>
-                        <Button fx:id="stopBtn" disable="true" mnemonicParsing="false" onAction="#stop" prefWidth="83.0" text="Stop" />
-                        <Button fx:id="abortBtn" disable="true" mnemonicParsing="false" onAction="#abort" prefWidth="83.0" text="Abort" />
-                        <Button fx:id="haltBtn" disable="true" mnemonicParsing="false" onAction="#halt" prefWidth="83.0" text="Halt" />
+                        <Button fx:id="stopBtn" disable="true" mnemonicParsing="false" prefWidth="83.0" text="Stop" />
+                        <Button fx:id="abortBtn" disable="true" mnemonicParsing="false" prefWidth="83.0" text="Abort" />
+                        <Button fx:id="haltBtn" disable="true" mnemonicParsing="false" prefWidth="83.0" text="Halt" />
                      </children>
                   </HBox>
                </children>
