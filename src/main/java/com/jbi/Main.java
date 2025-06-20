@@ -25,7 +25,7 @@ public class Main extends Application {
         Parent root = ViewFactory.APPLICATION.get();
         stage.setScene(new Scene(root));
         stage.setTitle("Queue Monitor");
-        stage.setMinWidth(1010);
+        stage.setMinWidth(965);
         stage.setMinHeight(710);
         stage.setOnCloseRequest(e -> Platform.exit());
         stage.show();
