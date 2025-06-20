@@ -16,11 +16,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-/**
- * “Queue” toolbox – Start / Stop (toggle) / Auto-start controls and a tiny
- * status read-out.
- * All enable / disable logic mirrors the official Bluesky Qt widget.
- */
 public final class ReQueueControlsController implements Initializable {
 
     @FXML private CheckBox autoChk;
