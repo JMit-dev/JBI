@@ -5,8 +5,10 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jbi.api.HistoryGetPayload;
 import com.jbi.api.QueueItem;
 import com.jbi.client.RunEngineService;
+import com.jbi.util.UiSignals;
 import com.jbi.view.ViewFactory;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -31,7 +33,7 @@ public final class ApplicationController implements Initializable {
     @FXML private CheckBox activateDestroyChk;
     @FXML private Tab      monitorQueueTab;
     @FXML private Tab      editAndControlQueueTab;
-    @FXML private MenuItem savePlanTxt, savePlanJson, savePlanYaml;
+    @FXML private MenuItem savePlanTxt, savePlanJson, savePlanYaml, activateDestroyItem;
 
     private final RunEngineService svc = new RunEngineService();
     private static final Logger LOG = Logger.getLogger(ApplicationController.class.getName());
@@ -39,12 +41,13 @@ public final class ApplicationController implements Initializable {
     @Override public void initialize(URL url, ResourceBundle rb) {
         monitorQueueTab.setContent(ViewFactory.MONITOR_QUEUE.get());
         editAndControlQueueTab.setContent(ViewFactory.EDIT_AND_CONTROL_QUEUE.get());
+
+        activateDestroyChk.selectedProperty()
+                .bindBidirectional(UiSignals.envDestroyArmedProperty());
     }
 
     @FXML private void toggleDestroyActivation() {
-        boolean armed = activateDestroyChk.isSelected();
-        LOG.info(() -> "Destroy-Environment armed = " + armed);
-        // TODO: forward to model
+        activateDestroyChk.setSelected(!activateDestroyChk.isSelected());
     }
 
     @FXML private void savePlanTxt() {

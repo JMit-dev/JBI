@@ -3,7 +3,9 @@ package com.jbi.controller;
 import com.jbi.api.StatusResponse;
 import com.jbi.client.RunEngineService;
 import com.jbi.util.StatusBus;
+import com.jbi.util.UiSignals;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,22 +25,17 @@ public final class ReEnvironmentControlsController implements Initializable {
     private final RunEngineService svc = new RunEngineService();
     private final Logger LOG = Logger.getLogger(getClass().getName());
 
-    private volatile boolean destroyArmed = false;
+    private final BooleanProperty destroyArmed =
+            UiSignals.envDestroyArmedProperty();
 
     @Override public void initialize(URL url, ResourceBundle rb) {
 
-        /* react to /api/status pushes */
         StatusBus.latest().addListener(this::onStatus);
 
-        /* Ctrl-click arms “Destroy” */
-        destroyBtn.setOnMousePressed(e -> {
-            if (e.isControlDown()) destroyArmed = true;
-            refreshButtons(StatusBus.latest().get());
-        });
         destroyBtn.focusedProperty().addListener(
-                (ObservableValue<? extends Boolean> o, Boolean oldV, Boolean newV) -> {
-                    if (!newV) destroyArmed = false;       // disarm if focus lost
-                });
+                (o,ov,nv) -> { if (!nv) destroyArmed.set(false); });
+        destroyArmed.addListener((o, ov, nw) ->
+                Platform.runLater(() -> refreshButtons(StatusBus.latest().get())));
     }
 
     private void onStatus(ObservableValue<?> src, Object oldV, Object newV) {
@@ -64,7 +61,9 @@ public final class ReEnvironmentControlsController implements Initializable {
 
         openBtn   .setDisable(!(connected && !workerExists && idle));
         closeBtn  .setDisable(!(connected &&  workerExists && idle));
-        destroyBtn.setDisable(!(connected &&  workerExists && destroyArmed));
+
+        boolean armed = destroyArmed.get();
+        destroyBtn.setDisable(!(connected &&  workerExists && armed));
     }
 
     @FXML private void open() {
@@ -78,12 +77,9 @@ public final class ReEnvironmentControlsController implements Initializable {
     }
 
     @FXML private void destroy() {
-        if (!destroyArmed) return;          // should be disabled, extra guard
+        if (!destroyArmed.get()) return;
         try { svc.environmentDestroy(); }
-        catch (Exception ex) { LOG.warning("environmentDestroy: " + ex); }
-        finally {
-            destroyArmed = false;           // always disarm and refresh UI
-            refreshButtons(StatusBus.latest().get());
-        }
+        catch (Exception ex) { LOG.warning("environmentDestroy: "+ex); }
+        finally { destroyArmed.set(false); }   // auto-disarm
     }
 }

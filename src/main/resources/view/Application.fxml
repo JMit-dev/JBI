@@ -14,7 +14,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="Control Actions">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#toggleDestroyActivation" text="Activate 'Destroy Environment'">
+              <MenuItem fx:id="activateDestroyItem" mnemonicParsing="false" onAction="#toggleDestroyActivation" text="Activate 'Destroy Environment'">
                      <graphic>
                         <CheckBox fx:id="activateDestroyChk" mnemonicParsing="false" onAction="#toggleDestroyActivation" />
                      </graphic>
