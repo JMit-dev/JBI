@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane minHeight="670.0" minWidth="930.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane minHeight="670.0" minWidth="930.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbi.controller.MonitorQueueController">
    <children>
       <AnchorPane layoutX="20.0" layoutY="20.0">
          <children>
@@ -17,21 +17,9 @@
       </AnchorPane>
       <VBox layoutX="20.0" layoutY="170.0" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="170.0">
          <children>
-            <AnchorPane prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <fx:include source="ReRunningPlan.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-            <AnchorPane prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <fx:include source="RePlanQueue.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-            <AnchorPane prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <fx:include source="RePlanHistory.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
+            <AnchorPane fx:id="runningPlanContainer" prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS" />
+            <AnchorPane fx:id="planQueueContainer" prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS" />
+            <AnchorPane fx:id="planHistoryContainer" prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS" />
             <AnchorPane prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS">
                <children>
                   <fx:include source="ReConsoleMonitor.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />

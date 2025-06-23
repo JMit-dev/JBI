@@ -26,11 +26,25 @@ public final class ReRunningPlanController implements Initializable {
 
     private String lastRunningUid = "";
 
+    private final boolean viewOnly;
+
+    public ReRunningPlanController() {
+        this(false); // default to editable
+    }
+
+    public ReRunningPlanController(boolean viewOnly) {
+        this.viewOnly = viewOnly;
+    }
+
     @Override public void initialize(URL u, ResourceBundle b) {
         planTextArea.setEditable(false);
         planTextArea.setStyle("-fx-focus-color: transparent;");
         planTextArea.setStyle("-fx-faint-focus-color: transparent;");
 
+        if (viewOnly) {
+            copyBtn.setDisable(true);
+            updateBtn.setDisable(true);
+        }
 
         render(StatusBus.latest().get());
         ChangeListener<StatusResponse> statusL = (obs, o, n) -> render(n);

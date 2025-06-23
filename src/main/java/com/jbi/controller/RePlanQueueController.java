@@ -41,6 +41,16 @@ public final class RePlanQueueController implements Initializable {
     private static final Logger LOG =
             Logger.getLogger(RePlanQueueController.class.getName());
 
+    private final boolean viewOnly;
+
+    public RePlanQueueController() {
+        this(false); // default to editable
+    }
+
+    public RePlanQueueController(boolean viewOnly) {
+        this.viewOnly = viewOnly;
+    }
+
     @Override public void initialize(URL url, ResourceBundle rb) {
 
         table.setItems(rows);
@@ -59,9 +69,28 @@ public final class RePlanQueueController implements Initializable {
         userCol .setCellValueFactory(c -> new ReadOnlyStringWrapper(c.getValue().user()));
         grpCol  .setCellValueFactory(c -> new ReadOnlyStringWrapper(c.getValue().group()));
 
-        enableRowDragAndDrop();
-        hookButtons();
-        updateButtonStates();
+        table.getSelectionModel().getSelectedIndices()
+                .addListener((ListChangeListener<? super Integer>) c -> updateButtonStates());
+
+        deselectBtn.setOnAction(e -> {
+            table.getSelectionModel().clearSelection();
+            stickySel = List.of();
+        });
+
+        if (viewOnly) {
+            upBtn.setDisable(true);
+            downBtn.setDisable(true);
+            topBtn.setDisable(true);
+            bottomBtn.setDisable(true);
+            deleteBtn.setDisable(true);
+            duplicateBtn.setDisable(true);
+            clearBtn.setDisable(true);
+            loopBtn.setDisable(true);
+        } else {
+            enableRowDragAndDrop();
+            hookButtons();
+            updateButtonStates();
+        }
 
         table.getSelectionModel().getSelectedItems()
                 .addListener((ListChangeListener<Row>) c -> {
@@ -261,20 +290,31 @@ public final class RePlanQueueController implements Initializable {
         boolean connected = StatusBus.latest().get()!=null;
 
         var sel = table.getSelectionModel().getSelectedIndices();
-        boolean hasSel = !sel.isEmpty(),
-                atTop  = hasSel && sel.get(0)==0,
-                atBot  = hasSel && sel.get(sel.size()-1)==rows.size()-1;
+        boolean hasSel = !table.getSelectionModel().getSelectedIndices().isEmpty();
+        boolean atTop = hasSel && table.getSelectionModel().getSelectedIndices().get(0) == 0;
+        boolean atBot = hasSel && table.getSelectionModel().getSelectedIndices().size() - 1== rows.size() - 1;
 
-        upBtn      .setDisable(!(connected&&hasSel&&!atTop));
-        downBtn    .setDisable(!(connected&&hasSel&&!atBot));
-        topBtn     .setDisable(upBtn.isDisable());
-        bottomBtn  .setDisable(downBtn.isDisable());
-        deleteBtn  .setDisable(!(connected&&hasSel));
-        duplicateBtn.setDisable(deleteBtn.isDisable());
-
-        clearBtn   .setDisable(!(connected && !rows.isEmpty()));
-        deselectBtn.setDisable(!hasSel);
-        loopBtn    .setDisable(!connected);
+        if (viewOnly) {
+            upBtn.setDisable(true);
+            downBtn.setDisable(true);
+            topBtn.setDisable(true);
+            bottomBtn.setDisable(true);
+            deleteBtn.setDisable(true);
+            duplicateBtn.setDisable(true);
+            clearBtn.setDisable(true);
+            loopBtn.setDisable(true);
+            deselectBtn.setDisable(!hasSel);
+        } else {
+            upBtn.setDisable(!(connected && hasSel && !atTop));
+            downBtn.setDisable(!(connected && hasSel && !atBot));
+            topBtn.setDisable(upBtn.isDisable());
+            bottomBtn.setDisable(downBtn.isDisable());
+            deleteBtn.setDisable(!(connected && hasSel));
+            duplicateBtn.setDisable(deleteBtn.isDisable());
+            clearBtn.setDisable(!(connected && !rows.isEmpty()));
+            loopBtn.setDisable(!connected);
+            deselectBtn.setDisable(!hasSel);
+        }
     }
 
     private void enableRowDragAndDrop() {

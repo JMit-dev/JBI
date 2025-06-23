@@ -41,6 +41,16 @@ public final class RePlanHistoryController implements Initializable {
     private static final Logger LOG =
             Logger.getLogger(RePlanHistoryController.class.getName());
 
+    private final boolean viewOnly;
+
+    public RePlanHistoryController() {
+        this(false); // default to editable
+    }
+
+    public RePlanHistoryController(boolean viewOnly) {
+        this.viewOnly = viewOnly;
+    }
+
     @Override public void initialize(URL u, ResourceBundle rb) {
 
         table.setItems(rows);
@@ -57,8 +67,21 @@ public final class RePlanHistoryController implements Initializable {
         userCol  .setCellValueFactory(c -> new ReadOnlyStringWrapper(c.getValue().user()));
         grpCol   .setCellValueFactory(c -> new ReadOnlyStringWrapper(c.getValue().group()));
 
-        hookButtons();
-        updateButtonStates();
+        table.getSelectionModel().getSelectedIndices()
+                .addListener((ListChangeListener<? super Integer>) c -> updateButtonStates());
+
+        deselectBtn.setOnAction(e -> {
+            table.getSelectionModel().clearSelection();
+            stickySel = List.of();
+        });
+
+        if (viewOnly) {
+            copyBtn.setDisable(true);
+            clearBtn.setDisable(true);
+        } else {
+            hookButtons();
+            updateButtonStates();
+        }
 
         table.getSelectionModel().getSelectedIndices()
                 .addListener((ListChangeListener<? super Integer>) c -> {
@@ -154,12 +177,20 @@ public final class RePlanHistoryController implements Initializable {
     }
 
     private void updateButtonStates() {
-        boolean connected = StatusBus.latest().get()!=null;
-        boolean hasSel    = !table.getSelectionModel().getSelectedIndices().isEmpty();
-        copyBtn   .setDisable(!(connected && hasSel));
-        deselectBtn.setDisable(!hasSel);
-        clearBtn  .setDisable(!(connected && !rows.isEmpty()));
+        boolean connected = StatusBus.latest().get() != null;
+        boolean hasSel = !table.getSelectionModel().getSelectedIndices().isEmpty();
+
+        if (viewOnly) {
+            copyBtn.setDisable(true);
+            clearBtn.setDisable(true);
+            deselectBtn.setDisable(!hasSel);
+        } else {
+            copyBtn.setDisable(!(connected && hasSel));
+            clearBtn.setDisable(!(connected && !rows.isEmpty()));
+            deselectBtn.setDisable(!hasSel);
+        }
     }
+
 
     private void autoResizeColumns() {
         table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);

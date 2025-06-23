@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane minHeight="670.0" minWidth="930.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane minHeight="670.0" minWidth="930.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbi.controller.EditAndControlQueueController">
    <children>
       <AnchorPane layoutX="20.0" layoutY="20.0">
          <children>
@@ -36,25 +36,13 @@
                         <Pane minHeight="220.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
-                  <AnchorPane VBox.vgrow="ALWAYS">
-                     <children>
-                        <fx:include source="RePlanQueue.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
+                  <AnchorPane fx:id="planQueueContainer" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
             <VBox prefWidth="314.0" spacing="20.0" HBox.hgrow="ALWAYS">
                <children>
-                  <AnchorPane prefHeight="78.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <fx:include source="ReRunningPlan.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane VBox.vgrow="ALWAYS">
-                     <children>
-                        <fx:include source="RePlanHistory.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
+                  <AnchorPane fx:id="runningPlanContainer" prefHeight="78.0" VBox.vgrow="ALWAYS" />
+                  <AnchorPane fx:id="planHistoryContainer" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </children>

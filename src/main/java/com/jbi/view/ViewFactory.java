@@ -35,4 +35,5 @@ public enum ViewFactory {
             return new StackPane(new Label("⚠ Unable to load " + path));
         }
     }
+
 }
