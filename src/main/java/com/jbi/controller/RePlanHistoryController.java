@@ -135,7 +135,6 @@ public final class RePlanHistoryController implements Initializable {
                         null,
                         q.user(),
                         q.userGroup(),
-                        q.meta(),
                         q.result()
                 ))
                 .toList();
@@ -206,14 +205,9 @@ public final class RePlanHistoryController implements Initializable {
         return Stream.of(a,k).filter(s->!s.isEmpty())
                 .collect(Collectors.joining(", "));
     }
-    private static String metaField(QueueItem q,String key){
-        return Optional.ofNullable(q.meta())
-                .map(m -> m.getOrDefault(key,"")).map(Object::toString).orElse("");
-    }
+
     private static String exitStatus(QueueItem q){
         Map<String,Object> res = q.result();
-        if (res == null && q.meta() != null)
-            res = (Map<String,Object>) q.meta().get("result");
 
         return res == null ? ""
                 : String.valueOf(res.getOrDefault("exit_status",""));

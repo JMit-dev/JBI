@@ -116,11 +116,7 @@ public final class ReRunningPlanController implements Initializable {
                 item.kwargs().forEach((k,v) ->
                         sb.append("    ").append(k).append(": ").append(v).append('\n'));
             }
-            if (item.meta() != null && !item.meta().isEmpty()) {
-                sb.append("Metadata:\n");
-                item.meta().forEach((k,v) ->
-                        sb.append("    ").append(k).append(": ").append(v).append('\n'));
-            }
+
             sb.append('\n');
         }
 

@@ -17,16 +17,15 @@ public record QueueItemAdd(
             @JsonProperty("item_type") String itemType,
             String name,
             List<Object> args,
-            Map<String, Object> kwargs,
-            Map<String, Object> meta) {
+            Map<String, Object> kwargs
+    ) {
 
         public static Item from(QueueItem qi) {
             return new Item(
                     qi.itemType(),
                     qi.name(),
                     qi.args(),
-                    qi.kwargs(),
-                    (qi.meta() == null || qi.meta().isEmpty()) ? null : qi.meta());
+                    qi.kwargs());
         }
     }
 }
