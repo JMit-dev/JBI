@@ -157,14 +157,20 @@ public final class ReConsoleMonitorController implements Initializable {
         int    keepCaret   = textArea.getCaretPosition();
         double keepScrollY = textArea.getScrollTop();
 
-        textArea.setText(textBuf.tail(maxLines));
+        textArea.replaceText(0, textArea.getLength(), textBuf.tail(maxLines));
 
         if (wantBottom) {
-            textArea.positionCaret(textArea.getLength());
+            Platform.runLater(() -> {
+                textArea.positionCaret(textArea.getLength());
+                textArea.setScrollTop(Double.MAX_VALUE);
+                if (vBar != null) vBar.setValue(vBar.getMax());
+            });
         } else {
             textArea.positionCaret(Math.min(keepCaret, textArea.getLength()));
-            Platform.runLater(() -> textArea.setScrollTop(keepScrollY));
+            double y = keepScrollY;
+            Platform.runLater(() -> textArea.setScrollTop(y));
         }
+
 
         ignoreScroll = false;
         lastLine = Instant.now();
@@ -177,8 +183,9 @@ public final class ReConsoleMonitorController implements Initializable {
 
         if (vBar == null) return;
 
-        boolean atBottom = newVal.doubleValue() >= vBar.getMax();
-        if (autoscrollChk.isSelected() && !atBottom) {
+        boolean atBottom = (vBar.getMax() - newVal.doubleValue()) < 1.0;
+
+        if (!atBottom && autoscrollChk.isSelected()) {
             autoscrollChk.setSelected(false);
         }
     }
