@@ -90,24 +90,49 @@ public class MonitorQueueController implements Initializable {
             final TitledPane lower = panes[i + 1];
 
             bar.setOnMouseEntered(e -> bar.setCursor(Cursor.V_RESIZE));
-            bar.setOnMousePressed(e -> {
-                bar.setUserData(new double[]{
-                        e.getScreenY(),
-                        upper.getPrefHeight(),
-                        lower.getPrefHeight()
-                });
-            });
+
+            bar.setOnMousePressed(e -> bar.setUserData(new double[]{ e.getScreenY() }));
+
             bar.setOnMouseDragged(e -> {
-                if (!upper.isExpanded() || !lower.isExpanded()) return;
 
-                double[] data = (double[]) bar.getUserData();
-                double dy      = e.getScreenY() - data[0];
-                double newUp   = Math.max(40, data[1] + dy);   // 40 = min body height
-                double newLow  = Math.max(40, data[2] - dy);
+                boolean upOpen  = upper.isExpanded();
+                boolean lowOpen = lower.isExpanded();
+                if (!upOpen && !lowOpen) return;          // both collapsed → ignore
 
-                upper.setPrefHeight(newUp);
-                lower.setPrefHeight(newLow);
+                double[] d   = (double[]) bar.getUserData();
+                double lastY = d[0];                      // reference from previous event
+                double dy    = e.getScreenY() - lastY;    // incremental movement
+                if (Math.abs(dy) < 0.1) return;           // jitter guard
+
+                /* title-bar heights so we never hide headers */
+                double upHdr  = upper.lookup(".title").getBoundsInParent().getHeight();
+                double lowHdr = lower.lookup(".title").getBoundsInParent().getHeight();
+
+                if (upOpen && lowOpen) {
+                    /* both panes open – resize both sides */
+                    double newUp  = Math.max(upHdr,  upper.getPrefHeight()  + dy);
+                    double newLow = Math.max(lowHdr, lower.getPrefHeight() - dy);
+                    upper.setPrefHeight(newUp);
+                    lower.setPrefHeight(newLow);
+                    savedHeights.put(upper, newUp);
+                    savedHeights.put(lower, newLow);
+
+                } else if (upOpen) {
+                    /* only upper is open – move it alone */
+                    double newUp = Math.max(upHdr, upper.getPrefHeight() + dy);
+                    upper.setPrefHeight(newUp);
+                    savedHeights.put(upper, newUp);
+
+                } else { // only lower open
+                    double newLow = Math.max(lowHdr, lower.getPrefHeight() - dy);
+                    lower.setPrefHeight(newLow);
+                    savedHeights.put(lower, newLow);
+                }
+
+                d[0] = e.getScreenY();                    // update reference point
             });
+
+
 
             /* insert bar AFTER the upper pane in the VBox children list */
             int insertPos = stack.getChildren().indexOf(upper) + 1;
