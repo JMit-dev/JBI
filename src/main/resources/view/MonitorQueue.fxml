@@ -16,7 +16,7 @@
             <fx:include source="ReStatusMonitor.fxml" />
          </children>
       </AnchorPane>
-      <VBox AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="170.0">
+      <VBox fx:id="stack" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="170.0">
          <children>
             <TitledPane fx:id="runningPane" animated="false" text="Running Plan" VBox.vgrow="ALWAYS">
                <content>
