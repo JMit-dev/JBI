@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane minHeight="670.0" minWidth="930.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbi.controller.MonitorQueueController">
    <children>
@@ -16,24 +16,24 @@
             <fx:include source="ReStatusMonitor.fxml" />
          </children>
       </AnchorPane>
-      <SplitPane dividerPositions="0.5, 0.5, 0.5" orientation="VERTICAL" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="170.0">
-        <items>
-            <TitledPane text="Running Plan">
+      <VBox AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="170.0">
+         <children>
+            <TitledPane fx:id="runningPane" animated="false" text="Running Plan" VBox.vgrow="ALWAYS">
                <content>
                   <AnchorPane fx:id="runningPlanContainer" />
                </content>
             </TitledPane>
-            <TitledPane text="Plan Queue">
+            <TitledPane fx:id="queuePane" animated="false" text="Plan Queue" VBox.vgrow="ALWAYS">
                <content>
                   <AnchorPane fx:id="planQueueContainer" />
                </content>
             </TitledPane>
-            <TitledPane text="Plan History">
+            <TitledPane fx:id="historyPane" animated="false" text="Plan History" VBox.vgrow="ALWAYS">
                <content>
                   <AnchorPane fx:id="planHistoryContainer" />
                </content>
             </TitledPane>
-            <TitledPane text="Console Monitor">
+            <TitledPane fx:id="consolePane" animated="false" text="Console Monitor" VBox.vgrow="ALWAYS">
                <content>
                   <AnchorPane>
                      <children>
@@ -42,7 +42,7 @@
                   </AnchorPane>
                </content>
             </TitledPane>
-        </items>
-      </SplitPane>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>
