@@ -24,6 +24,11 @@ public class MonitorQueueController implements Initializable {
 
     private final Map<TitledPane, Double> savedHeights = new HashMap<>();
 
+    private static final String BAR_NORMAL =
+            "-fx-background-color: linear-gradient(to bottom, derive(-fx-base,15%) 0%, derive(-fx-base,-5%) 100%);" +
+                    "-fx-border-color: derive(-fx-base,-25%) transparent derive(-fx-base,-25%) transparent;" +
+                    "-fx-border-width: 1 0 1 0;";
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadInto(runningPlanContainer, "/view/ReRunningPlan.fxml", new ReRunningPlanController(true));
@@ -75,7 +80,7 @@ public class MonitorQueueController implements Initializable {
         for (int i = 0; i < panes.length - 1; i++) {
 
             Pane bar = new Pane();
-            bar.getStyleClass().add("vbox-drag-bar");
+            bar.setStyle(BAR_NORMAL);
             bar.setPrefHeight(4);                 // thin line
             bar.setMinHeight(4);
             bar.setMaxHeight(4);
