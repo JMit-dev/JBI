@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
 
 <AnchorPane minHeight="670.0" minWidth="930.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbi.controller.MonitorQueueController">
    <children>
@@ -15,17 +16,33 @@
             <fx:include source="ReStatusMonitor.fxml" />
          </children>
       </AnchorPane>
-      <VBox layoutX="20.0" layoutY="170.0" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="170.0">
-         <children>
-            <AnchorPane fx:id="runningPlanContainer" prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS" />
-            <AnchorPane fx:id="planQueueContainer" prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS" />
-            <AnchorPane fx:id="planHistoryContainer" prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS" />
-            <AnchorPane prefHeight="105.0" prefWidth="890.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <fx:include source="ReConsoleMonitor.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-         </children>
-      </VBox>
+      <SplitPane dividerPositions="0.5, 0.5, 0.5" orientation="VERTICAL" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="170.0">
+        <items>
+            <TitledPane text="Running Plan">
+               <content>
+                  <AnchorPane fx:id="runningPlanContainer" />
+               </content>
+            </TitledPane>
+            <TitledPane text="Plan Queue">
+               <content>
+                  <AnchorPane fx:id="planQueueContainer" />
+               </content>
+            </TitledPane>
+            <TitledPane text="Plan History">
+               <content>
+                  <AnchorPane fx:id="planHistoryContainer" />
+               </content>
+            </TitledPane>
+            <TitledPane text="Console Monitor">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <fx:include source="ReConsoleMonitor.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </TitledPane>
+        </items>
+      </SplitPane>
    </children>
 </AnchorPane>
