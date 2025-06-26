@@ -33,7 +33,7 @@ public final class ApplicationController implements Initializable {
     @FXML private CheckBox activateDestroyChk;
     @FXML private Tab      monitorQueueTab;
     @FXML private Tab      editAndControlQueueTab;
-    @FXML private MenuItem savePlanTxt, savePlanJson, savePlanYaml, activateDestroyItem;
+    @FXML private MenuItem savePlanTxt   , savePlanJson, savePlanYaml, activateDestroyItem;
 
     private final RunEngineService svc = new RunEngineService();
     private static final Logger LOG = Logger.getLogger(ApplicationController.class.getName());
