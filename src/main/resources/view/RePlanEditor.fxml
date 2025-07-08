@@ -25,7 +25,7 @@
             <ChoiceBox fx:id="choiceBox" />
          </children>
         </HBox>
-        <HBox fx:id="editBtn" alignment="CENTER_LEFT" layoutY="194.0" spacing="7.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <HBox alignment="CENTER_LEFT" layoutY="194.0" spacing="7.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <children>
             <Button fx:id="batchBtn" mnemonicParsing="false" text="Batch Upload" />
             <HBox alignment="CENTER_RIGHT" spacing="7.0" HBox.hgrow="ALWAYS">
