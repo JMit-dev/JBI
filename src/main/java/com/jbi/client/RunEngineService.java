@@ -226,6 +226,7 @@ public final class RunEngineService {
     /* ---- Permissions & allowed lists ------------------------------------ */
 
     public Envelope<?>          plansAllowed()               throws Exception { return http.call(ApiEndpoint.PLANS_ALLOWED,   NoBody.INSTANCE); }
+    public Map<String, Object>  plansAllowedRaw()           throws Exception { return http.send(ApiEndpoint.PLANS_ALLOWED,   NoBody.INSTANCE); }
     public Envelope<?>          devicesAllowed()             throws Exception { return http.call(ApiEndpoint.DEVICES_ALLOWED, NoBody.INSTANCE); }
     public Envelope<?>          plansExisting()              throws Exception { return http.call(ApiEndpoint.PLANS_EXISTING,  NoBody.INSTANCE); }
     public Envelope<?>          devicesExisting()            throws Exception { return http.call(ApiEndpoint.DEVICES_EXISTING,NoBody.INSTANCE); }
